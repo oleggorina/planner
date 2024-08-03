@@ -1,0 +1,119 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id Int @id @default(autoincrement())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  name String
+  email String @unique
+  password String
+  subscriptionPlan String @map("subscription_plan")
+  timeSettings TimeSettings?
+  tasks Task[]
+  habits Habit[]
+  timeBlock TimeBlock?
+  timerSession TimerSession?
+  @@map("user")
+}
+
+model TimeSettings {
+  id Int @id @unique
+  workInterval Int @default(50) @map("work_interval")
+  breakInterval Int @default(10) @map("break_interval")
+  intervalsCount Int @default(8) @map("intervals_count")
+  user User @relation(fields: [userId], references: [id])
+  userId Int @unique @map("user_id")
+  @@map("time_settings")
+}
+
+model Task {
+  id Int @id @unique
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  name String
+  priority Priority
+  isCompleted Boolean @default(false) @map("is_completed")
+  completedAt DateTime @map("completed_at")
+  userId Int @map("user_id")
+  user User @relation(fields: [userId], references: [id])
+  subtasks Subtask[]
+  @@map("task")
+}
+
+model Subtask {
+  id Int @id @unique
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  name String
+  isCompleted Boolean @default(false) @map("is_completed")
+  completedAt DateTime @map("completed_at")
+  taskId Int @map("task_id")
+  task Task @relation(fields: [taskId], references: [id])
+  @@map("subtask")
+}
+
+model Habit {
+  id Int @id @unique
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  name String
+  isCompleted Boolean @default(false) @map("is_completed")
+  completedAt DateTime @map("completed_at")
+  userId Int @map("user_id")
+  user User @relation(fields: [userId], references: [id])
+  @@map("habit")
+}
+
+model TimeBlock {
+  id Int @id @unique
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  name String
+  color String
+  duration Int
+  order Int @default(1)
+  userId Int @unique @map("user_id")
+  user User @relation(fields: [userId], references: [id])
+  @@map("time_block")
+}
+
+model TimerSession {
+  id Int @id @unique
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  isCompleted Boolean @default(false) @map("is_completed")
+  userId Int @unique @map("user_id")
+  user User @relation(fields: [userId], references: [id])
+  timerRounds TimerRound[]
+  @@map("timer_session")
+}
+
+model TimerRound {
+  id Int @id @unique
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  totalSeconds Int @map("total_seconds")
+  isCompleted Boolean @default(false) @map("is_completed")
+  timerSessionId Int @map("timer_session_id")
+  timerSession TimerSession @relation(fields: [timerSessionId], references: [id], onDelete: Cascade)
+  @@map("timer_round")
+}
+
+enum Priority {
+  low
+  medium
+  high
+}
