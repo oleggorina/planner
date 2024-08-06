@@ -21,32 +21,21 @@ model User {
   email String @unique
   password String
   subscriptionPlan String @map("subscription_plan")
-  timeSettings TimeSettings?
   tasks Task[]
   habits Habit[]
-  timeBlock TimeBlock?
+  timeBlock TimeBlock[]
   timerSession TimerSession?
   @@map("user")
 }
 
-model TimeSettings {
-  id Int @id @unique
-  workInterval Int @default(50) @map("work_interval")
-  breakInterval Int @default(10) @map("break_interval")
-  intervalsCount Int @default(8) @map("intervals_count")
-  user User @relation(fields: [userId], references: [id])
-  userId Int @unique @map("user_id")
-  @@map("time_settings")
-}
-
 model Task {
-  id Int @id @unique
+  id Int @id @default(autoincrement())
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
   name String
   priority Priority
   isCompleted Boolean @default(false) @map("is_completed")
-  completedAt DateTime @map("completed_at")
+  completedAt DateTime? @map("completed_at")
   userId Int @map("user_id")
   user User @relation(fields: [userId], references: [id])
   subtasks Subtask[]
@@ -54,7 +43,7 @@ model Task {
 }
 
 model Subtask {
-  id Int @id @unique
+  id Int @id @default(autoincrement())
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
   name String
@@ -66,7 +55,7 @@ model Subtask {
 }
 
 model Habit {
-  id Int @id @unique
+  id Int @id @default(autoincrement())
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
   name String
@@ -78,31 +67,42 @@ model Habit {
 }
 
 model TimeBlock {
-  id Int @id @unique
+  id Int @id @default(autoincrement())
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
   name String
-  color String
+  color String?
   duration Int
-  order Int @default(1)
-  userId Int @unique @map("user_id")
+  order Int @default(autoincrement())
+  userId Int @map("user_id")
   user User @relation(fields: [userId], references: [id])
   @@map("time_block")
 }
 
 model TimerSession {
-  id Int @id @unique
+  id Int @id @default(autoincrement())
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
   isCompleted Boolean @default(false) @map("is_completed")
   userId Int @unique @map("user_id")
   user User @relation(fields: [userId], references: [id])
   timerRounds TimerRound[]
+  timerSettings TimerSettings?
   @@map("timer_session")
 }
 
+model TimerSettings {
+  id Int @id @default(autoincrement())
+  workInterval Int @default(50) @map("work_interval")
+  breakInterval Int @default(10) @map("break_interval")
+  intervalsCount Int @default(8) @map("intervals_count")
+  timerSession TimerSession @relation(fields: [timerSessionId], references: [id])
+  timerSessionId Int @unique @map("timer_session_id")
+  @@map("time_settings")
+}
+
 model TimerRound {
-  id Int @id @unique
+  id Int @id @default(autoincrement())
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
   totalSeconds Int @map("total_seconds")
