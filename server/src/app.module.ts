@@ -10,9 +10,10 @@ import { StatisticsModule } from './statistics/statistics.module';
 import { TimeBlockModule } from './time-block/time-block.module';
 import { TimerSessionModule } from './timer-session/timer-session.module';
 import { TimerRoundModule } from './timer-round/timer-round.module';
+import { HabitModule } from './habit/habit.module';
 
 @Module({
-  imports: [ConfigModule.forRoot(), AuthModule, UserModule, TimerSettingsModule, TaskModule, StatisticsModule, TimeBlockModule, TimerSessionModule, TimerRoundModule],
+  imports: [ConfigModule.forRoot(), AuthModule, UserModule, TimerSettingsModule, TaskModule, StatisticsModule, TimeBlockModule, TimerSessionModule, TimerRoundModule, HabitModule],
   controllers: [AppController],
   providers: [AppService],
 })

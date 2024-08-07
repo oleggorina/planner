@@ -60,7 +60,7 @@ model Habit {
   updatedAt DateTime @updatedAt @map("updated_at")
   name String
   isCompleted Boolean @default(false) @map("is_completed")
-  completedAt DateTime @map("completed_at")
+  completedAt DateTime? @map("completed_at")
   userId Int @map("user_id")
   user User @relation(fields: [userId], references: [id])
   @@map("habit")
